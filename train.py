@@ -3,6 +3,7 @@ import random
 
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
@@ -20,10 +21,11 @@ if __name__ == '__main__':
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='klue/roberta-small', type=str)
-    parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--max_epoch', default=1, type=int)
+    parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--max_epoch', default=30, type=int)
     parser.add_argument('--shuffle', default=True)
-    parser.add_argument('--learning_rate', default=1e-5, type=float)
+    parser.add_argument('--learning_rate', default=1e-6, type=float)
+    parser.add_argument('--num_workers', default=1, type=int)
     parser.add_argument('--train_path', default='../data/train.csv')
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
@@ -32,15 +34,32 @@ if __name__ == '__main__':
 
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
-                            args.test_path, args.predict_path)
+                            args.test_path, args.predict_path, args.num_workers)
     model = Model(args.model_name, args.learning_rate)
 
+    checkpoint_callback = ModelCheckpoint(
+        every_n_train_steps=2,
+        save_top_k=3,
+        save_last = True,
+        # monitor="val_loss",
+        # mode='min',
+        monitor="val_pearson",
+        mode='max',
+        filename="sts-{epoch:02d}-{val_loss:.2f}",
+    )
+
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
+    trainer = pl.Trainer(
+        accelerator="gpu", 
+        devices=1, 
+        max_epochs=args.max_epoch, 
+        callbacks=[checkpoint_callback],
+        log_every_n_steps=1
+    )
 
     # Train part
     trainer.fit(model=model, datamodule=dataloader)
     trainer.test(model=model, datamodule=dataloader)
 
     # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, 'model.pt')
+    # torch.save(model, 'model.pt')

@@ -10,11 +10,12 @@ from data.dataset import Dataset
 
 
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path):
+    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path, num_workers):
         super().__init__()
         self.model_name = model_name
         self.batch_size = batch_size
         self.shuffle = shuffle
+        self.num_workers = num_workers
 
         self.train_path = train_path
         self.dev_path = dev_path
@@ -80,7 +81,7 @@ class Dataloader(pl.LightningDataModule):
             self.predict_dataset = Dataset(predict_inputs, [])
 
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=self.shuffle)
+        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=self.shuffle, num_workers=self.num_workers)
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size)
