@@ -14,21 +14,17 @@ torch.cuda.manual_seed(0)
 torch.cuda.manual_seed_all(0)
 random.seed(0)
 
-
 if __name__ == '__main__':
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='monologg/koelectra-base-v3-discriminator', type=str)
-    # parser.add_argument('--model_name', default='klue/roberta-small', type=str)
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--max_epoch', default=50, type=int)
     parser.add_argument('--shuffle', default=True)
-    parser.add_argument('--learning_rate', default=1e-6, type=float)
-    # parser.add_argument('--train_path', default='./smallest_train.csv')
+    parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default='./train_augmented_1_3.csv')
-    # parser.add_argument('--train_path', default='../data/train.csv')
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
@@ -43,10 +39,8 @@ if __name__ == '__main__':
         every_n_train_steps=2,
         save_top_k=3,
         save_last = True,
-        # monitor="val_loss",
-        # mode='min',
-        monitor="val_pearson",
-        mode='max',
+        monitor="val_pearson",      #'val_loss'
+        mode='max',                 #'min'
         filename="sts-{epoch:02d}-{val_pearson:.2f}",
     )
 

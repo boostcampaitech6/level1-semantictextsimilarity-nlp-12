@@ -26,8 +26,7 @@ class Dataloader(pl.LightningDataModule):
         self.predict_dataset = None
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(model_name, max_length=160)
-        # self.target_columns = ['label']
-        self.target_columns = ['binary-label']
+        self.target_columns = ['label']
         self.delete_columns = ['id']
         self.text_columns = ['sentence_1', 'sentence_2']
 
@@ -49,9 +48,9 @@ class Dataloader(pl.LightningDataModule):
             targets = data[self.target_columns].values.tolist()
         except:
             targets = []
-
         # 텍스트 데이터를 전처리합니다.
         inputs = self.tokenizing(data)
+
         return inputs, targets
 
     def setup(self, stage='fit'):
