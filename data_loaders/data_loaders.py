@@ -8,14 +8,12 @@ import pytorch_lightning as pl
 
 from data.dataset import Dataset
 
-
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path, num_workers):
+    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path):
         super().__init__()
         self.model_name = model_name
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.num_workers = num_workers
 
         self.train_path = train_path
         self.dev_path = dev_path
@@ -28,7 +26,8 @@ class Dataloader(pl.LightningDataModule):
         self.predict_dataset = None
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(model_name, max_length=160)
-        self.target_columns = ['label']
+        # self.target_columns = ['label']
+        self.target_columns = ['binary-label']
         self.delete_columns = ['id']
         self.text_columns = ['sentence_1', 'sentence_2']
 
@@ -50,9 +49,9 @@ class Dataloader(pl.LightningDataModule):
             targets = data[self.target_columns].values.tolist()
         except:
             targets = []
+
         # 텍스트 데이터를 전처리합니다.
         inputs = self.tokenizing(data)
-
         return inputs, targets
 
     def setup(self, stage='fit'):
@@ -81,7 +80,7 @@ class Dataloader(pl.LightningDataModule):
             self.predict_dataset = Dataset(predict_inputs, [])
 
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=self.shuffle, num_workers=self.num_workers)
+        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=self.shuffle)
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size)
