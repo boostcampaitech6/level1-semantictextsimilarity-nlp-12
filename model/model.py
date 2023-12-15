@@ -14,6 +14,7 @@ class Model(pl.LightningModule):
         # 사용할 모델을 호출합니다.
         self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
             pretrained_model_name_or_path=model_name, num_labels=1)
+
         self.loss_func = torch.nn.MSELoss()
 
     def forward(self, x):
@@ -25,9 +26,11 @@ class Model(pl.LightningModule):
         x, y = batch
         logits = self(x)
         loss = self.loss_func(logits, y.float())
-        self.log("train_loss", loss)
+        # self.log("train_loss", loss)
+        metrics = {"loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
+        self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
 
-        return loss
+        return metrics
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
