@@ -13,7 +13,7 @@ class Model(pl.LightningModule):
 
         self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
             pretrained_model_name_or_path=model_name, num_labels=1)
-            
+
         # Freeze all layers
         # for param in self.plm.parameters():
             # param.requires_grad = False
@@ -26,8 +26,10 @@ class Model(pl.LightningModule):
         return x
 
     def training_step(self, batch, batch_idx):
-        x, mask, y = batch
-        logits = self(x, mask)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
 
         metrics = {"loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
@@ -36,8 +38,10 @@ class Model(pl.LightningModule):
         return metrics
 
     def validation_step(self, batch, batch_idx):
-        x, mask, y = batch
-        logits = self(x, mask)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
 
         metrics = {"val_loss": loss, "val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
@@ -46,14 +50,17 @@ class Model(pl.LightningModule):
         return metrics
 
     def test_step(self, batch, batch_idx):
-        x, mask, y = batch
-        logits = self(x, mask)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
 
         self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
 
     def predict_step(self, batch, batch_idx):
-        x, mask = batch
-        logits = self(x, mask)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        logits = self(x, attention_mask)
 
         return logits.squeeze()
 
