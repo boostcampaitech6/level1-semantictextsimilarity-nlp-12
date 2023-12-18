@@ -4,12 +4,13 @@ from tqdm import tqdm
 
 
 # csv 파일 이름 설정
-ver = 1
+ver = 2
 mode = 'cleaning'
 
 def data_cleaning(s):
     clean_s = re.sub(r'<PERSON>', ' ', s) # Slack에 있는 <PERSON> 제거
-    clean_s = re.sub(r'[^가-힣0-9a-zA-Z.,?!]', ' ', clean_s)
+    clean_s = re.sub(r'[^ㄱ-ㅎㅏ-ㅣ가-힣0-9a-zA-Z.,?!]', ' ', clean_s)
+    clean_s = re.sub(r'(\w)\1+', r'\1', clean_s)
     clean_s = re.sub(r'(\W)\1+', r'\1', clean_s) # 연속된 특수문자(.,?!) 하나로 통일
     clean_s = ' '.join(clean_s.split()) # 연속된 공백 하나로 바꿈
     return clean_s
