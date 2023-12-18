@@ -24,10 +24,10 @@ if __name__ == '__main__':
     parser.add_argument('--max_epoch', default=1, type=int)
     parser.add_argument('--shuffle', default=True)
     parser.add_argument('--learning_rate', default=1e-4, type=float)
-    parser.add_argument('--train_path', default='../../data/train.csv')
-    parser.add_argument('--dev_path', default='../../data/dev.csv')
-    parser.add_argument('--test_path', default='../../data/dev.csv')
-    parser.add_argument('--predict_path', default='../../data/test.csv')
+    parser.add_argument('--train_path', default='../data/train.csv')
+    parser.add_argument('--dev_path', default='../data/dev.csv')
+    parser.add_argument('--test_path', default='../data/dev.csv')
+    parser.add_argument('--predict_path', default='../data/test.csv')
     args = parser.parse_args(args=[])
 
     # dataloader와 model을 생성합니다.
@@ -39,9 +39,9 @@ if __name__ == '__main__':
 
     # Inference part
     # 저장된 모델로 예측을 진행합니다.
-    checkpoint_name = 'sts-epoch=01-val_pearson=1.00'
-    OUT_PATH = f'./output_{checkpoint_name}.csv'
-    PATH = f'/data/ephemeral/home/code/scripts/lightning_logs/version_5/checkpoints/{checkpoint_name}.ckpt'
+    checkpoint_name = 'sts-epoch=03-val_pearson=0.88'
+    OUT_PATH = f'../output/output_{checkpoint_name}.csv'
+    PATH = f'/data/ephemeral/home/code/lightning_logs/version_19/checkpoints/{checkpoint_name}.ckpt'
     model = Model.load_from_checkpoint(PATH)
     model.eval()
 
@@ -52,6 +52,6 @@ if __name__ == '__main__':
     predictions = list(round(float(i), 1) for i in torch.cat(predictions))
 
     # output 형식을 불러와서 예측된 결과로 바꿔주고, output.csv로 출력합니다.
-    output = pd.read_csv('../../data/sample_submission.csv')
+    output = pd.read_csv('../data/sample_submission.csv')
     output['target'] = predictions
     output.to_csv(OUT_PATH, index=False)
