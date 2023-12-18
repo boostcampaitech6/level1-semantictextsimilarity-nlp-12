@@ -37,9 +37,9 @@ if __name__ == '__main__':
 
     # Inference part
     # 저장된 모델로 예측을 진행합니다.
-    checkpoint_name = 'sts-epoch=44-val_pearson=0.91-v2'
+    checkpoint_name = 'sts-epoch=41-val_pearson=0.92'
     OUT_PATH = f'./output_{checkpoint_name}.csv'
-    PATH = f'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_6/checkpoints/{checkpoint_name}.ckpt'
+    PATH = f'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_68/checkpoints/{checkpoint_name}.ckpt'
     model = Model.load_from_checkpoint(PATH)
     model.eval()
 

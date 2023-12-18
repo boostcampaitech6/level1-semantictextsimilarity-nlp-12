@@ -9,9 +9,9 @@ class Dataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         # 정답이 있다면 else문을, 없다면 if문을 수행합니다
         if len(self.targets) == 0:
-            return torch.tensor(self.inputs[idx])
+            return torch.tensor(self.inputs[idx][0]), torch.tensor(self.inputs[idx][1])
         else:
-            return torch.tensor(self.inputs[idx]), torch.tensor(self.targets[idx])
+            return torch.tensor(self.inputs[idx][0]), torch.tensor(self.inputs[idx][1]), torch.tensor(self.targets[idx])
 
     # 입력하는 개수만큼 데이터를 사용합니다
     def __len__(self):

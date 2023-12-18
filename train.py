@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 from data_loaders.data_loaders import Dataloader
-from model.model import Model, Model_v2
+from model.model import Model
 
 # seed 고정
 torch.manual_seed(0)
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='monologg/koelectra-base-v3-discriminator', type=str)
     # parser.add_argument('--model_name', default='snunlp/KR-SBERT-V40K-klueNLI-augSTS', type=str)
-    parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--batch_size', default=512, type=int)
     parser.add_argument('--max_epoch', default=50, type=int)
     parser.add_argument('--shuffle', default=True)
     parser.add_argument('--learning_rate', default=1e-5, type=float)
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     )
 
     # Train part
-    # trainer.fit(model=model, datamodule=dataloader)
+    trainer.fit(model=model, datamodule=dataloader)
     trainer.test(model=model, datamodule=dataloader)
