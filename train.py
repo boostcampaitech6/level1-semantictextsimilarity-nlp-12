@@ -1,5 +1,6 @@
-import argparse
 import random
+import os
+import yaml
 
 import torch
 import pytorch_lightning as pl
@@ -9,6 +10,8 @@ import yaml
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
+
+from pytorch_lightning.loggers import WandbLogger
 
 # seed 고정
 torch.manual_seed(0)
