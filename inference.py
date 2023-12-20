@@ -24,19 +24,22 @@ if __name__ == '__main__':
 
     models_config = [
         {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/sts-epoch=19-val_pearson=0.936.ckpt',
+            # 'path':'/data/ephemeral/home/code/lightning_logs/version_2/checkpoints/sts-epoch=33-val_pearson=0.917.ckpt', # cleaning
+            'path':'/data/ephemeral/home/code/lightning_logs/version_6/checkpoints/sts-epoch=18-val_pearson=0.925.ckpt',
             'model_name':'xlm-roberta-large'
         },
         {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/sts-epoch=43-val_pearson=0.92.ckpt',
+            # 'path':'/data/ephemeral/home/code/lightning_logs/version_3/checkpoints/sts-epoch=40-val_pearson=0.927.ckpt',
+            'path':'/data/ephemeral/home/code/lightning_logs/version_7/checkpoints/sts-epoch=28-val_pearson=0.914.ckpt',
             'model_name':'monologg/koelectra-base-v3-discriminator'
         },
         {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_52/checkpoints/sts-epoch=28-val_pearson=0.92.ckpt',
+            # 'path':'/data/ephemeral/home/code/lightning_logs/version_4/checkpoints/sts-epoch=43-val_pearson=0.936.ckpt',
+            'path':'/data/ephemeral/home/code/lightning_logs/version_8/checkpoints/sts-epoch=26-val_pearson=0.932.ckpt',
             'model_name':'snunlp/KR-ELECTRA-discriminator'
         },
     ]
-    OUT_PATH = './output_ensemble.csv'
+    OUT_PATH = '../output/output_ensemble_data_switching_1.csv'
 
     predictions_list = []
     for config in models_config:
