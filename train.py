@@ -10,9 +10,9 @@ from model.model import Model
 
 from pytorch_lightning.loggers import WandbLogger
 wandb_logger = WandbLogger(project='sts-origin_datasets',
-                           name = 'koelectra-base-v3-discriminator',
-                           log_model='True',
-                           save_dir = '../wandb')
+                           name = 'xlm-roberta-large',
+                           log_model='all',
+                           )
 # 시간 기록
 import time
 from datetime import timedelta
@@ -26,8 +26,8 @@ random.seed(0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--model_name', default='xlm-roberta-large', type=str)
-    parser.add_argument('--model_name', default='monologg/koelectra-base-v3-discriminator', type=str)
+    parser.add_argument('--model_name', default='xlm-roberta-large', type=str)
+    # parser.add_argument('--model_name', default='monologg/koelectra-base-v3-discriminator', type=str)
     # parser.add_argument('--model_name', default='snunlp/KR-ELECTRA-discriminator', type=str)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--max_epoch', default=50, type=int)
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         max_epochs=args.max_epoch, 
         callbacks=[checkpoint_callback],
         log_every_n_steps=1,
-        # logger=wandb_logger # WandB 추가
+        logger=wandb_logger # WandB 추가
     )
 
     # Train part
