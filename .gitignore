@@ -160,6 +160,5 @@ cython_debug/
 #.idea/
 lightning_logs/
 experiment/
-train_*.py
 sts-origin_datasets/
 wandb/
