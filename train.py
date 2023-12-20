@@ -1,4 +1,3 @@
-import argparse
 import random
 import os
 import yaml
@@ -9,6 +8,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
+
+from pytorch_lightning.loggers import WandbLogger
 
 # seed 고정
 torch.manual_seed(0)
@@ -26,6 +27,15 @@ def load_config(config_name):
         return config
     
 config = load_config("test_config.yaml")
+
+# WandB 
+
+wandb_logger = WandbLogger(
+    project=config['project_name'],
+    name=config['model_name'],
+    log_model=config['log_name'],
+    save_dir=config['save_dir']
+)
 
 # dataloader 초기화
 dataloader = Dataloader(config["model_name"], config["batch_size"], config["shuffle"], config["train_path"], config["dev_path"],
@@ -53,7 +63,8 @@ trainer = pl.Trainer(
     devices=1, 
     max_epochs=config["max_epoch"], 
     callbacks=[checkpoint_callback],
-    log_every_n_steps=1
+    log_every_n_steps=1,
+    logger=wandb_logger
 )
 
 # Train part
