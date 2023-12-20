@@ -1,0 +1,16 @@
+# INITNIAL SETTINGS
+train_path: ./train_augmented_4.csv
+dev_path: ../data/dev.csv
+test_path: ../data/dev.csv
+predict_path: ../data/test.csv
+model_name: snunlp/KR-SBERT-V40K-klueNLI-augSTS
+fine_tuning: False
+
+# Parameters
+batch_size: 64
+max_epoch: 50
+learning_rate: 1e-5
+shuffle: True
+
+# Fine-tuning
+checkpoint_name: sts-epoch=19-val_pearson=0.79
