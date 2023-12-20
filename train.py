@@ -18,7 +18,6 @@ random.seed(0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--use_sweep', default=False, type=bool)
     parser.add_argument('--wandb_logger', default=False, type=bool)
     parser.add_argument('--fine_tuning', default=False, type=bool)
     parser.add_argument('--config', default='./configs/KR-ELECTRA-discriminator.yml', type=str)
