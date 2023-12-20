@@ -8,11 +8,6 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
 
-from pytorch_lightning.loggers import WandbLogger
-wandb_logger = WandbLogger(project='sts-origin_datasets',
-                           name = 'xlm-roberta-large',
-                           log_model='all',
-                           )
 # 시간 기록
 import time
 from datetime import timedelta
@@ -66,7 +61,6 @@ if __name__ == '__main__':
         max_epochs=args.max_epoch, 
         callbacks=[checkpoint_callback],
         log_every_n_steps=1,
-        logger=wandb_logger # WandB 추가
     )
 
     # Train part
