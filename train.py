@@ -1,17 +1,14 @@
+import argparse
 import random
-import os
-import yaml
 
+import yaml
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-import yaml
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
-
-from pytorch_lightning.loggers import WandbLogger
 
 # seed 고정
 torch.manual_seed(0)
@@ -24,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_sweep', default=False, type=bool)
     parser.add_argument('--wandb_logger', default=False, type=bool)
     parser.add_argument('--fine_tuning', default=False, type=bool)
-    parser.add_argument('--config', default='./configs/xlm-roberta-large.yml', type=str)
+    parser.add_argument('--config', default='./configs/KR-ELECTRA-discriminator.yml', type=str)
     args = parser.parse_args(args=[])
 
     with open(args.config, "r") as f:
@@ -55,7 +52,7 @@ if __name__ == '__main__':
             max_epochs=cfg['max_epoch'], 
             callbacks=[checkpoint_callback],
             log_every_n_steps=1,
-            logger=WandbLogger(project=f"sts-{cfg['model_name']}")
+            logger=WandbLogger(project=f"sts-{cfg['name']}")
         )
     else:
         trainer = pl.Trainer(
