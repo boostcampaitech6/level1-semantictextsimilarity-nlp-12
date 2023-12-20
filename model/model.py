@@ -34,8 +34,10 @@ class Model(pl.LightningModule):
 
         metrics = {"loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
         self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
-
         return metrics
+        # self.log('train_loss', loss)
+        # self.log('train_pearson', torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
+        # return loss
 
     def validation_step(self, batch, batch_idx):
         x = batch['input_ids']
@@ -46,8 +48,10 @@ class Model(pl.LightningModule):
 
         metrics = {"val_loss": loss, "val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
         self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
-        
         return metrics
+        # self.log('val_loss', loss)
+        # self.log('val_pearson', torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
+        # return loss
 
     def test_step(self, batch, batch_idx):
         x = batch['input_ids']
