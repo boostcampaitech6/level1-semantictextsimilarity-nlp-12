@@ -2,7 +2,6 @@ import torch
 import torchmetrics
 import transformers
 import pytorch_lightning as pl
-import wandb
 
 class Model(pl.LightningModule):
     def __init__(self, model_name, lr):
@@ -33,13 +32,9 @@ class Model(pl.LightningModule):
         logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
 
-        # metrics = {"train_loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
-        # wandb.log =(metrics)
-        ## self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
-        # return loss
-        self.log('train_loss', loss)
-        self.log('train_pearson', torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-        return loss
+        metrics = {"loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
+        self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
+        return metrics
 
     def validation_step(self, batch, batch_idx):
         x = batch['input_ids']
@@ -48,13 +43,9 @@ class Model(pl.LightningModule):
         logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
 
-        # metrics = {"val_loss": loss, "val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
-        # wandb.log =(metrics)
-        # self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
-        # return metrics
-        self.log('val_loss', loss)
-        self.log('val_pearson', torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-        return loss
+        metrics = {"val_loss": loss, "val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
+        self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
+        return metrics
 
     def test_step(self, batch, batch_idx):
         x = batch['input_ids']
@@ -63,8 +54,7 @@ class Model(pl.LightningModule):
         logits = self(x, attention_mask)
 
         self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-        # wandb.log({"test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())})
-
+        
     def predict_step(self, batch, batch_idx):
         x = batch['input_ids']
         attention_mask = batch['attention_mask']
