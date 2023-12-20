@@ -24,15 +24,19 @@ if __name__ == '__main__':
 
     models_config = [
         {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_36/checkpoints/sts-epoch=14-val_pearson=0.92.ckpt',
+            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/roberta_19_0.936.ckpt',
+            'model_name':'xlm-roberta-large'
+        },
+        {
+            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/koelectra_43_0.92.ckpt',
             'model_name':'monologg/koelectra-base-v3-discriminator'
         },
         {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_50/checkpoints/sts-epoch=43-val_pearson=0.92.ckpt',
-            'model_name':'monologg/koelectra-base-v3-discriminator'
-        }
+            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/snunlp_49_0.928.ckpt',
+            'model_name':'snunlp/KR-ELECTRA-discriminator'
+        }, 
     ]
-    OUT_PATH = './output_ensemble.csv'
+    OUT_PATH = './output_ensemble_4-2.csv'
 
     predictions_list = []
     for config in models_config:

@@ -9,11 +9,12 @@ import pytorch_lightning as pl
 from data.dataset import Dataset
 
 class Dataloader(pl.LightningDataModule):
-    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path):
+    def __init__(self, model_name, batch_size, shuffle, train_path, dev_path, test_path, predict_path, max_sentence_length):
         super().__init__()
         self.model_name = model_name
         self.batch_size = batch_size
         self.shuffle = shuffle
+        self.max_sentence_length = max_sentence_length
 
         self.train_path = train_path
         self.dev_path = dev_path
@@ -35,7 +36,7 @@ class Dataloader(pl.LightningDataModule):
         for idx, item in tqdm(dataframe.iterrows(), desc='tokenizing', total=len(dataframe)):
             # 두 입력 문장을 [SEP] 토큰으로 이어붙여서 전처리합니다.
             text = '[SEP]'.join([item[text_column] for text_column in self.text_columns])
-            outputs = self.tokenizer(text, max_length=100, add_special_tokens=True, padding='max_length', truncation=True)
+            outputs = self.tokenizer(text, max_length=self.max_sentence_length, add_special_tokens=True, padding='max_length', truncation=True)
             data.append((outputs['input_ids'], outputs['attention_mask']))
 
         return data
