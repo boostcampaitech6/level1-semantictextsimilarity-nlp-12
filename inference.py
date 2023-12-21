@@ -22,26 +22,27 @@ if __name__ == '__main__':
     parser.add_argument('--predict_path', default='../data/test.csv')
     args = parser.parse_args(args=[])
 
-    models_config = [
+    models_config = [ 
+        {
+            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/koelectra_43_0.92.ckpt',
+            'model_name':'monologg/koelectra-base-v3-discriminator'
+        }, 
+        {
+            'path': '/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/sts-KR-ELECTRA-discriminator/982fqjhr/checkpoints/sts-epoch=56-val_pearson=0.933.ckpt',
+            'model_name':'snunlp/KR-ELECTRA-discriminator'
+        },
         {
             'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/roberta_19_0.936.ckpt',
             'model_name':'xlm-roberta-large'
         },
-        {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/koelectra_43_0.92.ckpt',
-            'model_name':'monologg/koelectra-base-v3-discriminator'
-        },
-        {
-            'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/snunlp_49_0.928.ckpt',
-            'model_name':'snunlp/KR-ELECTRA-discriminator'
-        }, 
     ]
-    OUT_PATH = './output_ensemble_4-2.csv'
-
+    
+    OUT_PATH = './output_ensemble_3.csv'
+    max_sentence_length = 100
     predictions_list = []
     for config in models_config:
         dataloader = Dataloader(config['model_name'], args.batch_size, args.shuffle, args.train_path, args.dev_path,
-                            args.test_path, args.predict_path)
+                            args.test_path, args.predict_path, max_sentence_length)
         trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1, log_every_n_steps=1)
 
         model = Model.load_from_checkpoint(config['path'])

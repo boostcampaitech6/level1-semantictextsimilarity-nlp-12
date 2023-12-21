@@ -1,8 +1,8 @@
 ## xlm-roberta-large
 
 # Model
-name: xlm-roberta-large
-model_name: xlm-roberta-large
+name: klue-roberta-large
+model_name: klue/roberta-large
 
 # System
 accelerator: gpu
@@ -10,7 +10,7 @@ gpu_num: 1
 
 # Trainer
 learning_rate: 0.00002
-max_epoch: 60
+max_epoch: 50
 batch_size: 64
 max_sentence_length: 100
 shuffle: True
