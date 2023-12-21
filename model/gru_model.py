@@ -26,8 +26,8 @@ class GRUModel(pl.LightningModule):
                                     out_features=1)
         self.tanh = torch.nn.Tanh()
 
-    def forward(self, x):
-        output = self.plm(x)
+    def forward(self, input_ids, attention_mask):
+        output = self.plm(input_ids, attention_mask=attention_mask)
         output = output.last_hidden_state
         _, last_gru_state = self.gru(output)
         last_hidden_state = torch.cat((last_gru_state[-1], last_gru_state[-2]), dim=-1)
@@ -38,33 +38,41 @@ class GRUModel(pl.LightningModule):
         
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
-        # self.log("train_loss", loss); return loss;에서 수정됨.
+
         metrics = {"loss": loss, "train_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
         self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
+
         return metrics
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
         loss = self.loss_func(logits, y.float())
-        self.log("val_loss", loss)
 
-        self.log("val_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-
-        return loss
+        metrics = {"val_loss": loss, "val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())}
+        self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
+        
+        return metrics
 
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        y = batch['target']
+        logits = self(x, attention_mask)
 
         self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
 
     def predict_step(self, batch, batch_idx):
-        x = batch
-        logits = self(x)
+        x = batch['input_ids']
+        attention_mask = batch['attention_mask']
+        logits = self(x, attention_mask)
 
         return logits.squeeze()
 

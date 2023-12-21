@@ -9,6 +9,7 @@ from pytorch_lightning.loggers import WandbLogger
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
+from model.gru_model import GRUModel
 
 # seed 고정
 torch.manual_seed(0)
@@ -20,6 +21,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--wandb_logger', default=False, type=bool)
     parser.add_argument('--config', default='./configs/KR-ELECTRA-discriminator.yml', type=str)
+    parser.add_argument('--add_gru', default=True, type=bool)
     args = parser.parse_args(args=[])
 
     with open(args.config, "r") as f:
@@ -28,7 +30,13 @@ if __name__ == '__main__':
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(cfg['model_name'], cfg['batch_size'], cfg['shuffle'], cfg['train_path'], 
                             cfg['dev_path'],cfg['test_path'], cfg['predict_path'], cfg['max_sentence_length'])
-    model = Model(cfg['model_name'], cfg['learning_rate'])
+    
+    if (args.add_gru==True):
+        print("----------------------GRU ADDED MODEL----------------------")
+        model = GRUModel(cfg['model_name'], cfg['learning_rate'])
+    else:
+        print("------------------------PURE MODEL-------------------------")
+        model = Model(cfg['model_name'], cfg['learning_rate'])
     print(model)
 
     checkpoint_callback = ModelCheckpoint(
