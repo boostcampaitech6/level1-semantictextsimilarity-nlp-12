@@ -19,7 +19,6 @@ random.seed(0)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--wandb_logger', default=False, type=bool)
-    parser.add_argument('--fine_tuning', default=False, type=bool)
     parser.add_argument('--config', default='./configs/KR-ELECTRA-discriminator.yml', type=str)
     args = parser.parse_args(args=[])
 
@@ -29,11 +28,7 @@ if __name__ == '__main__':
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(cfg['model_name'], cfg['batch_size'], cfg['shuffle'], cfg['train_path'], 
                             cfg['dev_path'],cfg['test_path'], cfg['predict_path'], cfg['max_sentence_length'])
-
-    if args.fine_tuning:
-        model = Model.load_from_checkpoint(cfg['ckpt_path'])
-    else:
-        model = Model(cfg['model_name'], cfg['learning_rate'])
+    model = Model(cfg['model_name'], cfg['learning_rate'])
     print(model)
 
     checkpoint_callback = ModelCheckpoint(

@@ -3,7 +3,6 @@
 # Model
 name: koelectra-base-v3-discriminator
 model_name: monologg/koelectra-base-v3-discriminator
-# ckpt_path: /data/ephemeral/home/level1-semantictextsimilarity-nlp-12/lightning_logs/version_40/checkpoints/sts-epoch=19-val_pearson=0.79.ckpt
 
 # System
 accelerator: gpu
@@ -11,7 +10,7 @@ gpu_num: 1
 
 # Trainer
 learning_rate: 0.00002
-max_epoch: 60
+max_epoch: 40
 batch_size: 256
 max_sentence_length: 100
 shuffle: True

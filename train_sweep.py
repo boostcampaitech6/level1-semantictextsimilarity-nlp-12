@@ -20,7 +20,7 @@ random.seed(0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./configs/KR-ELECTRA-discriminator.yml', type=str)
+    parser.add_argument('--config', default='./configs/klue-roberta-large.yml', type=str)
     args = parser.parse_args(args=[])
 
     sweep_config = {
@@ -80,14 +80,10 @@ if __name__ == '__main__':
 
     sweep_id = wandb.sweep(
         sweep=sweep_config,     
-        project='tuning-1'  
+        project='tuning-3'  
     )
     wandb.agent(
         sweep_id=sweep_id,      
         function=sweep_train,   
         count=5                
     )
-    
-
-    
-    
