@@ -11,6 +11,7 @@ import pytorch_lightning as pl
 
 from data_loaders.data_loaders import Dataloader
 from model.model import Model
+from model.gru_model import GRUModel
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -35,6 +36,11 @@ if __name__ == '__main__':
             'path':'/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/roberta_19_0.936.ckpt',
             'model_name':'xlm-roberta-large'
         },
+        # {
+        #     'path': '/data/ephemeral/home/level1-semantictextsimilarity-nlp-12/sts-epoch=55-val_pearson=0.933.ckpt',
+        #     'model_name':'snunlp/KR-ELECTRA-discriminator'
+        #     'add_gru': True
+        # },
     ]
     
     OUT_PATH = './output_ensemble_3.csv'
@@ -45,7 +51,10 @@ if __name__ == '__main__':
                             args.test_path, args.predict_path, max_sentence_length)
         trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1, log_every_n_steps=1)
 
-        model = Model.load_from_checkpoint(config['path'])
+        if (config.get('add_gru') is not None and config['add_gru'] is True):
+            model = GRUModel.load_from_checkpoint(config['path'])
+        else:
+            model = Model.load_from_checkpoint(config['path'])
         trainer.test(model=model, datamodule=dataloader)
 
         predictions = trainer.predict(model=model, datamodule=dataloader)
