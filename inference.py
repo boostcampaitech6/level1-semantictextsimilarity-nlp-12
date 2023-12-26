@@ -52,10 +52,8 @@ if __name__ == '__main__':
         trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=1, log_every_n_steps=1)
 
         if (config.get('add_gru') is not None and config['add_gru'] is True):
-            print("----------------------GRU ADDED MODEL----------------------")
             model = GRUModel.load_from_checkpoint(config['path'])
         else:
-            print("------------------------PURE MODEL-------------------------")
             model = Model.load_from_checkpoint(config['path'])
         trainer.test(model=model, datamodule=dataloader)
 

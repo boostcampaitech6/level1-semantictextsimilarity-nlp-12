@@ -32,10 +32,8 @@ if __name__ == '__main__':
                             cfg['dev_path'],cfg['test_path'], cfg['predict_path'], cfg['max_sentence_length'])
     
     if (args.add_gru==True):
-        print("----------------------GRU ADDED MODEL----------------------")
         model = GRUModel(cfg['model_name'], cfg['learning_rate'])
     else:
-        print("------------------------PURE MODEL-------------------------")
         model = Model(cfg['model_name'], cfg['learning_rate'])
     print(model)
 
