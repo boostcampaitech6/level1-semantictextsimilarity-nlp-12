@@ -1,28 +1,105 @@
-from tqdm.auto import tqdm
-
+import csv
 import random
-import pandas as pd
+import re
+from transformers import AutoTokenizer
 
-def data_augmentation(path, num_of_samples=1):
-    data = pd.read_csv(path)
+def data_augmentation(file_path):
+    model_name = "kykim/bert-kor-base"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, max_length=160)
+    counter = 0
+    values = [4.8, 4.9, 5.0]
 
-    aug_rows = []
-    for src_idx, src_row in tqdm(data.iterrows(), desc='data_augmentation', total=len(data)):
-        aug_rows.append([f'{src_idx}_{src_idx}', 'augmented', src_row['sentence_2'], \
-                        src_row['sentence_1'], src_row['label'], src_row['binary-label']])
-        for trg_idx, trg_row in data.sample(n=num_of_samples).iterrows():
-            if src_idx == trg_idx:
-                continue
-            aug_rows.append([f'{src_idx}_{trg_idx}', 'augmented', src_row['sentence_1'], \
-                            trg_row['sentence_2'], round(random.uniform(0.1, 2.0),1), 0])
-            # aug_rows.append([f'{src_idx}_{trg_idx}', 'augmented', src_row['sentence_1'], \
-                            #  trg_row['sentence_2'], 0.3, 0])
-    
-    aug_df = pd.DataFrame(aug_rows, columns=data.columns) 
-    data = pd.concat([data, aug_df])
-    print('num of augmented data', len(aug_rows))
-    data.to_csv('./train_augmented_4.csv')
-       
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            reader = csv.reader(file)
+
+            # Skip the first row
+            next(reader)
+
+            # Get the total number of lines in the file
+            total_lines = sum(1 for _ in reader)
+
+            # Reset the file pointer to the beginning of the file
+            file.seek(0)
+
+            # Skip the first row again
+            next(reader)
+
+            # Define a variable to store the new data
+            new_data = []
+
+            # Iterate through the rows in the original file (starting from the second row)
+            for i, row in enumerate(reader):
+                # Process each row as needed to create new data
+                # Example: Extract the numeric part from the id column
+                match = re.search(r'(\d+)$', row[0])
+                id_numeric_part = match.group(1) if match else None
+
+                # Tokenize the sentence in the third column using the transformers tokenizer
+                sentence_1_tokens = tokenizer.encode(row[2], max_length=160, truncation=True)
+                sentence_2_tokens = tokenizer.encode(row[3], max_length=160, truncation=True)
+
+                # Remove the token from sentence_tokens if the similarity is less than 2
+                if len(sentence_1_tokens) > 4 and float(row[4]) < 2:
+                    del sentence_1_tokens[-2]
+
+                    # Use regular expression to find the last number and replace it with the custom value
+                    modified_id = re.sub(r'\d+$', str(total_lines+counter), row[0])
+                    counter += 1
+
+                    # Decode the modified tokens to obtain the word forms
+                    modified_sentence_words = tokenizer.decode(sentence_1_tokens, skip_special_tokens=True)
+
+                    selected_value = random.choice(values)
+
+                    # Append the numeric part and tokenized sentence to the new data
+                    new_row = [modified_id, row[1], row[2], modified_sentence_words, str(selected_value), '1.0']
+
+                    new_data.append(new_row)
+
+                # Remove the token from sentence_tokens if the similarity is less than 2
+                if len(sentence_2_tokens) > 4 and float(row[4]) < 2:
+                    del sentence_2_tokens[-2]
+
+                    # Use regular expression to find the last number and replace it with the custom value
+                    modified_id = re.sub(r'\d+$', str(total_lines+counter), row[0])
+                    counter += 1
+
+                    # Decode the modified tokens to obtain the word forms
+                    modified_sentence_words = tokenizer.decode(sentence_2_tokens, skip_special_tokens=True)
+
+                    selected_value = random.choice(values)
+
+                    # Append the numeric part and tokenized sentence to the new data
+                    new_row = [modified_id, row[1], modified_sentence_words, row[3], str(selected_value), '1.0']
+
+                    new_data.append(new_row)
+
+                # Reverse sentence order
+                elif float(row[4]) >= 2 and float(row[4]) < 4.8:
+                    modified_id = re.sub(r'\d+$', str(total_lines+counter), row[0])
+                    counter += 1
+
+                    new_row = [modified_id, row[1], row[3], row[2], row[4], row[5]]
+
+                    new_data.append(new_row)
+
+            # You can now use the 'new_data' variable for further processing or save it to a new file
+            try:
+                with open(file_path, 'a', newline='') as file:  # Open the existing file in append mode
+                    writer = csv.writer(file)
+                    writer.writerows(new_data)
+
+                print(f"Combined data written to {file_path}")
+
+            except Exception as e:
+                print(f"An error occurred while writing the combined data: {e}")
+
+    except FileNotFoundError:
+        print(f"The file '{file_path}' does not exist.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
-    data_augmentation('../../data/train.csv', 4)
+    data_augmentation('../../data/train.csv')
+    data_augmentation('../../data/dev.csv')
