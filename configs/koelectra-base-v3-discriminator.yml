@@ -1,0 +1,22 @@
+## monologg/koelectra-base-v3-discriminator
+
+# Model
+name: koelectra-base-v3-discriminator
+model_name: monologg/koelectra-base-v3-discriminator
+
+# System
+accelerator: gpu
+gpu_num: 1
+
+# Trainer
+learning_rate: 0.00002
+max_epoch: 40
+batch_size: 256
+max_sentence_length: 100
+shuffle: True
+
+# Data
+train_path: ../data/train.csv
+dev_path: ../data/dev.csv
+test_path: ../data/dev.csv
+predict_path: ../data/test.csv
